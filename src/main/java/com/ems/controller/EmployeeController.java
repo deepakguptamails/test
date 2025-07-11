@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +35,9 @@ public class EmployeeController {
 	@Autowired
 	private EmployeeRepository employeeRepository;
 
+	@Value("${spring.profiles.active}")
+		private String env;
+
 	/**
 	 * Retrieve all employees from the database.
 	 * 
@@ -57,7 +61,7 @@ public class EmployeeController {
 			throws ResourceNotFoundException {
 		logger.info("Fetching employee with id: {}", employeeId);
 		Employee employee = employeeRepository.findById(employeeId)
-				.orElseThrow(() -> new ResourceNotFoundException("Employee not found for this id :: " + employeeId));
+				.orElseThrow(() -> new ResourceNotFoundException("Employee not found for this id - " + employeeId));
 		return ResponseEntity.ok().body(employee);
 	}
 
@@ -122,5 +126,11 @@ public class EmployeeController {
 		response.put("deleted", Boolean.TRUE);
 		logger.info("Deleted employee with id: {}", employeeId);
 		return response;
+	}
+
+	@GetMapping("/employees/env")
+	public String getEnvironment() {
+
+		return "Environment: " + env;
 	}
 }
